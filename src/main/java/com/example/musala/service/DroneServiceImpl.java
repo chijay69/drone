@@ -80,12 +80,14 @@ public class DroneServiceImpl implements DroneService {
     public Drone registerDrone(DroneRequestDTO droneRequest) {
         List<Medication> medications = findMedicationsByCodes(droneRequest.getMedicationIds());
 
-        if (medications.isEmpty()) {
-            return prepareAndSaveDrone(droneRequest);
-        } else {
+        if (!medications.isEmpty()) {
             throw new RuntimeException("Medications cannot be added during drone initialization");
         }
+
+        // Proceed with drone registration logic when medications are empty
+        return prepareAndSaveDrone(droneRequest);
     }
+
 
     @Override
     public boolean loadMedicationItems(String serialNumber, List<MedicationRequestDTO> medicationsDTO) {

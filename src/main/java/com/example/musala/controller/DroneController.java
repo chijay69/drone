@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/drones")
@@ -25,19 +24,20 @@ public class DroneController {
 
     @Autowired
     private final DroneService droneService;
+    private final ObjectMapper objectMapper; // Inject ObjectMapper bean
+
+    // Existing code...
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerDrone(@RequestBody DroneRequestDTO droneRequest) {
-        // Validate the incoming drone registration request
+    public ResponseEntity<Object> registerDrone(@RequestBody DroneRequestDTO droneRequest) {
         if (!validateDroneRequest(droneRequest)) {
             return ResponseEntity.badRequest().body("Invalid drone registration data");
         }
         try {
-            // Register the drone using DroneService
             Drone registeredDrone = droneService.registerDrone(droneRequest);
             if (registeredDrone != null) {
                 DroneRequestDTO requestDTO = DroneConverter.convertToDTO(registeredDrone);
-                return ResponseEntity.ok("Drone registered successfully. Serial number: " + requestDTO.getSerialNumber());
+                return ResponseEntity.ok(objectMapper.writeValueAsString(requestDTO));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register drone");
             }
@@ -47,7 +47,7 @@ public class DroneController {
     }
 
     @PostMapping("/{serialNumber}/load")
-    public ResponseEntity<String> loadMedicationItems(
+    public ResponseEntity<Object> loadMedicationItems(
             @PathVariable String serialNumber,
             @RequestBody List<MedicationRequestDTO> medicationsDTO) {
         boolean isLoaded = droneService.loadMedicationItems(serialNumber, medicationsDTO);
@@ -59,7 +59,7 @@ public class DroneController {
     }
 
     @GetMapping("/{serialNumber}/battery-level")
-    public ResponseEntity<Integer> checkDroneBatteryLevel(@PathVariable String serialNumber) {
+    public ResponseEntity<Object> checkDroneBatteryLevel(@PathVariable String serialNumber) {
         int batteryLevel = droneService.checkDroneBatteryLevel(serialNumber);
         if (batteryLevel == -1) {
             return ResponseEntity.notFound().build();
@@ -67,9 +67,8 @@ public class DroneController {
         return ResponseEntity.ok(batteryLevel);
     }
 
-
     @GetMapping("/available-for-loading")
-    public ResponseEntity<List<DroneRequestDTO>> getAvailableDronesForLoading() {
+    public ResponseEntity<Object> getAvailableDronesForLoading() {
         List<DroneRequestDTO> availableDrones = droneService.getAvailableDronesForLoading();
 
         if (availableDrones.isEmpty()) {
@@ -80,7 +79,7 @@ public class DroneController {
     }
 
     @GetMapping("/{serialNumber}/loaded-medications")
-    public ResponseEntity<?> getLoadedMedications(@PathVariable String serialNumber) {
+    public ResponseEntity<Object> getLoadedMedications(@PathVariable String serialNumber) {
         try {
             List<Medication> loadedMedications = droneService.getLoadedMedicationsForDrone(serialNumber);
 
@@ -98,29 +97,24 @@ public class DroneController {
         }
     }
 
-
     // Validate the incoming drone registration request
-    private boolean validateDroneRequest(DroneRequestDTO droneRequest) {
+    public boolean validateDroneRequest(DroneRequestDTO droneRequest) {
         if (droneRequest == null) {
             return false; // Object is null, validation fails
         }
 
-        // Check individual attributes for validity
         boolean validBatteryCapacity = isValidBatteryCapacity(droneRequest.getBatteryCapacity());
         boolean validWeightLimit = isValidWeightLimit(droneRequest.getWeightLimit());
 
         return validBatteryCapacity && validWeightLimit;
     }
+
     private boolean isValidBatteryCapacity(int batteryCapacity) {
-        // Validate battery capacity range
         return batteryCapacity > 0 && batteryCapacity <= 100;
     }
 
     private boolean isValidWeightLimit(double weightLimit) {
-        // Validate weight limit range
-        return weightLimit>=0 && weightLimit <= 500;
+        return weightLimit >= 0 && weightLimit <= 500;
     }
-
 }
-
 

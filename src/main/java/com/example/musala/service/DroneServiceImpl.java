@@ -78,12 +78,13 @@ public class DroneServiceImpl implements DroneService {
 
     @Override
     public Drone registerDrone(DroneRequestDTO droneRequest) {
-        List<Medication> medications = findMedicationsByCodes(droneRequest.getMedicationIds());
+        System.out.println("By passsssssssssssssssssssssssssssssssssssssed");
+        List<Medication> medications = findMedications(droneRequest); //TODO
+
 
         if (!medications.isEmpty()) {
             throw new RuntimeException("Medications cannot be added during drone initialization");
         }
-
         // Proceed with drone registration logic when medications are empty
         return prepareAndSaveDrone(droneRequest);
     }
@@ -179,7 +180,12 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
-    public List<Medication> findMedicationsByCodes(List<String> medicationCodes) {
-        return medicationService.findMedicationsByCodeIn(medicationCodes);
+    public List<Medication> findMedications(DroneRequestDTO requestDTO){
+        return requestDTO.getLoadedMedications();
     }
+
+//    @Override
+//    public List<Medication> findMedicationsByCodes(List<String> medicationCodes) {
+//        return medicationService.findMedicationsByCodeIn(medicationCodes);
+//    }
 }

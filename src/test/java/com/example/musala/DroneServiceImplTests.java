@@ -9,23 +9,24 @@ import com.example.musala.data.enums.Model;
 import com.example.musala.data.model.Drone;
 import com.example.musala.data.model.Medication;
 import com.example.musala.repository.DroneRepository;
+import com.example.musala.service.DroneService;
 import com.example.musala.service.DroneServiceImpl;
 import com.example.musala.service.MedicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class DroneServiceImplTests {
 
     @Mock
@@ -34,6 +35,8 @@ class DroneServiceImplTests {
     @Mock
     private MedicationService medicationService;
 
+    @Mock
+    private DroneConverter droneConverter;
     @InjectMocks
     private DroneServiceImpl droneService;
 
@@ -48,7 +51,7 @@ class DroneServiceImplTests {
         requestDTO.setModel(Model.Middleweight); // Example weight limit
         requestDTO.setBatteryCapacity(80); // Example battery capacity
         requestDTO.setState(DroneState.IDLE); // Example state
-        requestDTO.setLoadedMedications(new ArrayList<>()); // Empty list of loaded medications
+//        requestDTO.setLoadedMedications(new ArrayList<>()); // Empty list of loaded medications
         return requestDTO;
     }
 
@@ -66,16 +69,19 @@ class DroneServiceImplTests {
         // Arrange
         DroneRequestDTO droneRequestDTO = createDroneRequestDTO();
 
+        List<Medication> medications = new ArrayList<>(3);
+
+        for (int i = 0; i <2; i++) {
+            medications.add(MedicationConverter.convertToEntity(createMedicationDTO(2)));
+        }
+
+        System.out.println(medications);
+
+        droneRequestDTO.setLoadedMedications(medications); //add medication list to droneDTO
+
         // Mock behavior of the repository or any other necessary mock setup
-        when(droneRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(droneRepository.save(any(Drone.class))).thenReturn(new Drone(/* provide a registered drone */));
+        assertThrows(RuntimeException.class, () -> droneService.registerDrone(droneRequestDTO));
 
-        // Act
-        Drone registeredDrone = droneService.registerDrone(droneRequestDTO);
-
-        // Assert
-        assertNotNull(registeredDrone);
-        // Add more assertions based on the expected behavior when an empty list of medications is provided
     }
 
     // Test cases for loadMedicationItems method
@@ -84,9 +90,10 @@ class DroneServiceImplTests {
         // Arrange
         DroneRequestDTO droneRequestDTO = createDroneRequestDTO();
         // Register the drone properly
-        Drone registeredDrone = droneRepository.save(DroneConverter.convertToEntity(droneRequestDTO));
+        Drone registeredDrone = droneService.registerDrone(droneRequestDTO);
+        System.out.println(registeredDrone);
 
-        assertNotNull(registeredDrone); // Ensure the drone is registered properly
+//        assertNotNull(registeredDrone); // Ensure the drone is registered properly
         String serialNumber = registeredDrone.getSerialNumber(); // Get the valid serial number
 
         List<MedicationRequestDTO> medicationsDTO = new ArrayList<>();

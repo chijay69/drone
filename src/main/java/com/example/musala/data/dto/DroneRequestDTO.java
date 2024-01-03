@@ -3,9 +3,11 @@ package com.example.musala.data.dto;
 import com.example.musala.data.model.Medication;
 import com.example.musala.data.enums.DroneState;
 import com.example.musala.data.enums.Model;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +15,9 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@Data
 @RequiredArgsConstructor
+
 public class DroneRequestDTO {
     private String serialNumber;
     private Model model;
@@ -77,10 +81,10 @@ public class DroneRequestDTO {
         // Assuming the maximum battery capacity is 100 units
         return (batteryCapacity * 100) / 100; // Formula to convert units to percentage
     }
-
-    public List<String> getMedicationIds() {
-        return loadedMedications.stream()
-                .map(Medication::getCode)
-                .collect(Collectors.toList());
-    }
+//
+//    public List<String> getMedicationIds() {
+//        return loadedMedications.stream()
+//                .map(Medication::getCode)
+//                .collect(Collectors.toList());
+//    }
 }

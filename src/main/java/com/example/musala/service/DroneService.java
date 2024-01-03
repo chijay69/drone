@@ -16,6 +16,5 @@ public interface DroneService {
     int checkDroneBatteryLevel(String serialNumber);
     List<Medication> getLoadedMedicationsForDrone(String serialNumber);
 
-    List<Medication> findMedicationsByCodes(List<String> medicationCodes);
-
+    List<Medication> findMedications(DroneRequestDTO requestDTO);
 }

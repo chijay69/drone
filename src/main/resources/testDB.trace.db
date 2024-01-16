@@ -1,0 +1,6 @@
+2024-01-16 19:46:52.944452+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DRONE" not found (this database is empty); SQL statement:
+select d1_0.serial_number,d1_0.battery_capacity,d1_0.model,d1_0.state,d1_0.weight_limit,lm1_0.drone_id,lm1_0.code,lm1_0.image,lm1_0.name,lm1_0.weight from drone d1_0 left join medication lm1_0 on d1_0.serial_number=lm1_0.drone_id where d1_0.serial_number=? [42104-224]
+2024-01-16 19:48:36.474252+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DRONE" not found (this database is empty); SQL statement:
+select d1_0.serial_number,d1_0.battery_capacity,d1_0.model,d1_0.state,d1_0.weight_limit,lm1_0.drone_id,lm1_0.code,lm1_0.image,lm1_0.name,lm1_0.weight from drone d1_0 left join medication lm1_0 on d1_0.serial_number=lm1_0.drone_id where d1_0.serial_number=? [42104-224]

@@ -73,6 +73,6 @@ This is a simple Drone Management System designed using Spring Boot, JPA/Hiberna
 
 4. Use a tool like Postman to interact with the provided endpoints.
 
-**Note**: The application uses an H2 in-memory database. You can access the H2 console at `http://localhost:8080/h2-console` with JDBC URL `jdbc:h2:mem:testdb`. The console provides insights into the database and allows you to execute SQL queries.
+**Note**: The application uses an H2 in-memory database. You can access the H2 console at `http://localhost:8080/h2-console` with JDBC URL `jdbc:h2:file:./src/main/resources/testDB`. The console provides insights into the database and allows you to execute SQL queries.
 
 Feel free to modify and extend the project based on your requirements.
